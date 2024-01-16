@@ -4,9 +4,11 @@ import android.content.res.ColorStateList
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageView
 import com.busybee.topsnackbar.R
 import com.google.android.material.snackbar.Snackbar
@@ -50,6 +52,7 @@ object TopSnackBar {
             val linearParent = snackView.findViewById<LinearLayout>(R.id.linearSnackParent)
             val textViewTop = snackView.findViewById<TextView>(R.id.tvMsg)
             val ivIcon = snackView.findViewById<AppCompatImageView>(R.id.barIcon)
+            val actionBtn = snackView.findViewById<AppCompatButton>(R.id.btnAction)
 
             // set the BG color if provided
             snackBarDataModel.bgColorID?.let {
@@ -68,12 +71,15 @@ object TopSnackBar {
                 ivIcon.visibility = View.INVISIBLE
             }
 
+            // set action btn visibility and action
+            makeActionBtn(actionBtn, snackBarDataModel)
+
             // set the msg to display
             textViewTop.text = snackBarDataModel.displayMsg
 
 
             //If the view is not covering the whole snackBar layout, add this line
-            layout.setPadding(20, 80, 20, 0)
+            layout.setPadding(0, 80, 0, 0)
 
             // Add the view to the SnackBar's layout
             layout.addView(snackView, 0)
@@ -87,6 +93,16 @@ object TopSnackBar {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    private fun makeActionBtn(actionBtn: AppCompatButton, snackBarDataModel: SnackBarDataModel) {
+        if (snackBarDataModel.actionBtnSetup.showActionButton){
+            actionBtn.visibility = View.VISIBLE
+            snackBarDataModel.actionBtnSetup.btnBgColor?.let { actionBtn.backgroundTintList = ColorStateList.valueOf(it) }
+            snackBarDataModel.actionBtnSetup.textColor?.let { actionBtn.setTextColor(it) }
+            actionBtn.text = snackBarDataModel.actionBtnSetup.actionBtnText
+            actionBtn.setOnClickListener { snackBarDataModel.actionBtnSetup.action.invoke() }
+        } else actionBtn.visibility = View.GONE
     }
 
 
